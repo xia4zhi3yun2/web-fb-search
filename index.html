@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
+    <link rel="stylesheet" href="style.css" />
+
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.js'></script>
+    <script src="http://connect.facebook.net/en_US/all.js"></script>
+    <script type="text/javascript" src="hw8.js"></script>
+
+
+    <title>Responsible Web Design</title>
+
+
+</head>
+
+
+<body ng-app="myApp" ng-controller="myCtrl" ng-init="load()">
+
+
+
+    <!--    search area-->
+    <div class="well well-sm" style="margin-bottom:0;">
+        <form class="form-inline">
+            <div class="row">
+                <div class="col-sm-2 col-xs-12">
+                    <span class="text-primary">FB Search</span>
+                </div>
+
+
+                <div class=" col-sm-9 col-sm-offset-1 col-xs-12">
+                    <div class="input-group" style="width:50%;float:left">
+                        <input id="keyword" type="text" name="keyword" ng-model="keyword" required class="form-control" placeholder="type something...">
+
+                        <span class="input-group-btn" style="width:20%;min-width:40px">
+                    <button class="btn btn-primary"style="width:100%;min-width:40px" id="submit_button" type="submit" name="search" value="Search" ng-click="submitForm()">
+                        <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                        </span>
+                    </div>
+
+                    <button type="reset" class="btn btn-default btn-outline" ng-click="clear_input();">Clear</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="results" style="position: relative">
+
+        <!--    result area      -->
+        <div class="tabbable">
+
+            <!--        navbar: search type  -->
+            <ul class="nav nav-pills nav-justified">
+                <li class="active"><a href="#users" data-toggle="tab" ng-click="bool=false;if_animate=false">Users</a></li>
+                <li><a href="#pages" data-toggle="tab" ng-click="bool=false;if_animate=false">Pages</a></li>
+                <li><a href="#events" data-toggle="tab" ng-click="bool=false;if_animate=false">Events</a></li>
+                <li><a href="#places" data-toggle="tab" ng-click="bool=false;if_animate=false">Places</a></li>
+                <li><a href="#groups" data-toggle="tab" ng-click="bool=false;if_animate=false">Groups</a></li>
+                <li><a href="#favorites" data-toggle="tab" ng-click="bool=false;if_animate=false">Favorites</a></li>
+            </ul>
+
+
+
+            <!--        result tables for all types-->
+            <div class="tab-content" ng-show='!bool' style="position:relative;padding:10px 0;">
+            
+
+                    <!--            result for users-->
+                    <div class="tab-pane active" id="users">
+                        <div class="container slide_panel" ng-class="{'class3' : back, 'class4' : !back && if_animate}">
+                            <div class="progress" ng-class="{'hidden': !loading }">
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                                    <span class="sr-only">45% Complete</span>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive" ng-show="userResponse.data.length && !loading">
+                                <table class="table">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Profile photo</th>
+                                        <th>Name</th>
+                                        <th>Favorites</th>
+                                        <th>Details</th>
+                                    </tr>
+
+                                    <tr ng-repeat="x in userResponse.data">
+                                        <td>{{ $index + 1 }}</td>
+                                        <td><img ng-src="{{x.picture.data.url}}" width="30" height="30" alt='profile pic'></td>
+                                        <td>{{ x.name }}</td>
+                                        <td>
+                                            <button class="btn btn-default" ng-click="set_fav(x,'users')"><span ng-class="{'glyphicon glyphicon-star-empty':!if_checked(x.id),'glyphicon glyphicon-star':if_checked(x.id)}"></span></button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-default" ng-click="ask_detail(x,'users')"><span class="glyphicon glyphicon-chevron-right"></span></button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <ul class="pager" ng-show="userResponse.data.length && !loading">
+                                <li><a href ng-hide="userResponse.paging.previous==null" ng-click="lastPage(userResponse.paging,'userResponse')">Previous</a></li>
+                                <li><a href ng-hide="userResponse.paging.next==null" ng-click="nextPage(userResponse.paging,'userResponse')">Next</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+
+                    <!--            result for pages-->
+                    <div class="tab-pane" id="pages">
+                        <div class="container slide_panel" ng-class="{'class3' : back, 'class4' : !back && if_animate}">
+                            <div class="progress" ng-class="{'hidden': !loading }">
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                                    <span class="sr-only">45% Complete</span>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive" ng-show="pageResponse.data.length && !loading">
+                                <table class="table" >
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Profile photo</th>
+                                        <th>Name</th>
+                                        <th>Favorites</th>
+                                        <th>Details</th>
+                                    </tr>
+
+                                    <tr ng-repeat="x in pageResponse.data">
+                                        <td>{{ $index + 1 }}</td>
+                                        <td><img ng-src="{{x.picture.data.url}}" width="30" height="30" alt='profile pic'></td>
+                                        <td>{{ x.name }}</td>
+                                        <td>
+                                            <button class="btn btn-default" ng-click="set_fav(x,'pages')"><span ng-class="{'glyphicon glyphicon-star-empty':!if_checked(x.id),'glyphicon glyphicon-star':if_checked(x.id)}"></span></button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-default" ng-click="ask_detail(x,'pages')"><span class="glyphicon glyphicon-chevron-right"></span></button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <ul class="pager" ng-show="pageResponse.data.length && !loading">
+                                <li><a href ng-hide="pageResponse.paging.previous==null" ng-click="lastPage(pageResponse.paging,'pageResponse')">Previous</a></li>
+                                <li><a href ng-hide="pageResponse.paging.next==null" ng-click="nextPage(pageResponse.paging,'pageResponse')">Next</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!--            results for events-->
+                    <div class="tab-pane" id="events">
+                        <div class="container slide_panel" ng-class="{'class3' : back, 'class4' : !back && if_animate}">
+                            <div class="progress" ng-class="{'hidden': !loading }">
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                                    <span class="sr-only">45% Complete</span>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive"  ng-show="eventResponse.data.length && !loading">
+                                <table class="table">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Profile photo</th>
+                                        <th>Name</th>
+                                        <th>Favorites</th>
+                                        <th>Details</th>
+                                    </tr>
+
+                                    <tr ng-repeat="x in eventResponse.data">
+                                        <td>{{ $index + 1 }}</td>
+                                        <td><img ng-src="{{x.picture.data.url}}" width="30" height="30" alt='profile pic'></td>
+                                        <td>{{ x.name }}</td>
+                                        <td>
+                                            <button class="btn btn-default" ng-click="set_fav(x,'events')"><span ng-class="{'glyphicon glyphicon-star-empty':!if_checked(x.id),'glyphicon glyphicon-star':if_checked(x.id)}"></span></button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-default" ng-click="ask_detail(x,'events')"><span class="glyphicon glyphicon-chevron-right"></span></button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <ul class="pager" ng-show="eventResponse.data.length && !loading">
+                                <li><a href ng-hide="eventResponse.paging.previous==null" ng-click="lastPage(eventResponse.paging,'eventResponse')">Previous</a></li>
+                                <li><a href ng-hide="eventResponse.paging.next==null" ng-click="nextPage(eventResponse.paging,'eventResponse')">Next</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <!--            results for places-->
+                    <div class="tab-pane" id="places">
+                        <div class="container slide_panel" ng-class="{'class3' : back, 'class4' : !back && if_animate}">
+                            <div class="progress" ng-class="{'hidden': !loading }">
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                                    <span class="sr-only">45% Complete</span>
+                                </div>
+                            </div>
+
+
+                            <div class="table-responsive"  ng-show="placeResponse.data.length && !loading">
+                                <table class="table">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Profile photo</th>
+                                        <th>Name</th>
+                                        <th>Favorites</th>
+                                        <th>Details</th>
+                                    </tr>
+
+                                    <tr ng-repeat="x in placeResponse.data">
+                                        <td>{{ $index + 1 }}</td>
+                                        <td><img ng-src="{{x.picture.data.url}}" width="30" height="30" alt='profile pic'></td>
+                                        <td>{{ x.name }}</td>
+                                        <td>
+                                            <button class="btn btn-default" ng-click="set_fav(x,'places')"><span ng-class="{'glyphicon glyphicon-star-empty':!if_checked(x.id),'glyphicon glyphicon-star':if_checked(x.id)}"></span></button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-default" ng-click="ask_detail(x,'places')"><span class="glyphicon glyphicon-chevron-right"></span></button>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </div>
+                            <ul class="pager" ng-show="placeResponse.data.length && !loading">
+                                <li><a href ng-hide="placeResponse.paging.previous==null" ng-click="lastPage(placeResponse.paging,'placeResponse')">Previous</a></li>
+                                <li><a href ng-hide="placeResponse.paging.next==null" ng-click="nextPage(placeResponse.paging,'placeResponse')">Next</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+
+                    <!--            results for groups-->
+                    <div class="tab-pane" id="groups">
+                        <div class="container slide_panel" ng-class="{'class3' : back, 'class4' : !back && if_animate}">
+                            <div class="progress" ng-class="{'hidden': !loading }">
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                                    <span class="sr-only">45% Complete</span>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive"  ng-show="groupResponse.data.length && !loading">
+                                <table class="table">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Profile photo</th>
+                                        <th>Name</th>
+                                        <th>Favorites</th>
+                                        <th>Details</th>
+                                    </tr>
+
+                                    <tr ng-repeat="x in groupResponse.data">
+                                        <td>{{ $index + 1 }}</td>
+                                        <td><img ng-src="{{x.picture.data.url}}" width="30" height="30" alt='profile pic'></td>
+                                        <td>{{ x.name }}</td>
+                                        <td>
+                                            <button class="btn btn-default" ng-click="set_fav(x,'groups')"><span ng-class="{'glyphicon glyphicon-star-empty':!if_checked(x.id),'glyphicon glyphicon-star':if_checked(x.id)}"></span></button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-default" ng-click="ask_detail(x,'groups')"><span class="glyphicon glyphicon-chevron-right"></span></button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <ul class="pager" ng-show="groupResponse.data.length && !loading">
+                                <li><a href ng-hide="groupResponse.paging.previous==null" ng-click="lastPage(groupResponse.paging,'groupResponse')">Previous</a></li>
+                                <li><a href ng-hide="groupResponse.paging.next==null" ng-click="nextPage(groupResponse.paging,'groupResponse')">Next</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+
+                    <!--            results for favorites-->
+                    <div class="tab-pane" id="favorites">
+                        <div class="container slide_panel" ng-class="{'class3' : back, 'class4' : !back && if_animate}">
+                            <div class="table-responsive">
+                                <table class="table" ng-hide="check_fav()">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Profile photo</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Favorites</th>
+                                        <th>Details</th>
+                                    </tr>
+
+                                    <tr ng-repeat="(key,value) in favResponse">
+                                        <td>{{ $index + 1 }}</td>
+                                        <td><img ng-src="{{value.picture.data.url}}" width="30" height="30" alt='profile pic'></td>
+                                        <td>{{value.name}}</td>
+                                        <td>{{value.type}}</td>
+                                        <td>
+                                            <button class="btn btn-default" ng-click="delete_fav(key)"><span class="glyphicon glyphicon-trash"></span></button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-default" ng-click="ask_detail(value,value.type)"><span class="glyphicon glyphicon-chevron-right"></span></button>
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+      
+        </div>
+
+        <div id="details" ng-show="bool" style="position:relative;padding:0 40px;">
+            <div class="container slide_panel" ng-class="{ 'class1' : bool, 'class2' : !bool }">
+
+                <!--                <div class="container">-->
+                <div class="row" style="margin:20px 20px;">
+                    <button class="btn btn-default" style="position: relative;float: left" ng-click="bool=!bool;back=true;"><span class="glyphicon glyphicon-chevron-left">Back</span></button>
+                    <button class="btn btn-default" style="position: relative;float: right;" ng-click="post_to_fb(current_item.picture.data.url,current_item.name)"><img src="http://cs-server.usc.edu:45678/hw/hw8/images/facebook.png" width="15" /></button>
+                    <button class="btn btn-default" style="position: relative;float: right;margin-right: 20px;" ng-click="set_fav(current_item,current_type)"><span ng-class="{'glyphicon glyphicon-star-empty':!if_checked(current_item.id),'glyphicon glyphicon-star':if_checked(current_item.id)}"></span></button>
+                </div>
+
+                <div class="col-md-6 col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Albums</div>
+                        <div class="panel-body">
+
+
+                            <div class="progress" ng-class="{'hidden': !loading }" style="margin-top:0">
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                                    <span class="sr-only">45% Complete</span>
+                                </div>
+                            </div>
+
+
+                            <div class="panel panel-default" ng-show="!loading && detailResponse==null || !loading && !detailResponse.albums.data.length">
+                                <div class="panel-body" style="background-color:#fcf8e3;">No data found.</div>
+                            </div>
+
+
+                            <div ng-show="!loading && detailResponse.albums.data.length" class="panel-group" id="accordion">
+                                <div class="panel panel-default" ng-repeat="x in detailResponse.albums.data">
+                                    <div class="panel-heading"><a data-toggle="collapse" data-parent="#accordion" href="#collapse{{$index}}" style="color:black; ">{{x.name}}</a></div>
+
+                                    <div id="collapse{{$index}}" ng-class='{in:$first}' class="panel-collapse collapse">
+                                        <div ng-repeat="y in x.photos.data" class="panel-body" ng-init="high_res='https://graph.facebook.com/v2.8/'+y.id+'/picture?access_token=EAAPnStEBDl4BAHnMjFcg3eSvZCH0UwsXOVEVkK0lp31AdtaM1EpSZB4uNkEcZC8mbASiAZBq7vanFsZA826s5mmd6VhKZBcaf9g9BAXz122ZAaOnUrFEtqtLZA8YOoHK6LGK85pmV7ZCnxsof3cX7cTMdKJ92Rm0iq60ZD'">
+                                            <img ng-src="{{high_res}}" alt="detail pic" width="100%">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6 col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Posts</div>
+                        <div class="panel-body">
+                            <div class="progress" ng-class="{'hidden': !loading }" style="margin-top:0">
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                                    <span class="sr-only">45% Complete</span>
+                                </div>
+                            </div>
+
+                            <div class="panel panel-default" ng-show="!loading && !detailResponse.posts.data.length">
+                                <div class="panel-body" style="background-color:#fcf8e3;">No data found.</div>
+                            </div>
+
+                            <div class="panel-group" ng-show="!loading && detailResponse.posts.data.length">
+                                <div class="panel panel-default" ng-repeat="x in detailResponse.posts.data">
+                                    <div class="panel-body">
+                                        <div style="width: 100%;height: 50px;position: relative;">
+                                            <div style="width: 40px;height: 40px;position: relative;float: left"><img ng-src="{{current_item.picture.data.url}}" width="30" height="30" alt='profile pic'></div>
+                                            <div style="position: relative;float: left;margin-left: 10px;width: 70%"><span style="font-weight:bold">{{current_item.name}}</span>
+                                                <br/>
+                                                <span style="color: grey">{{x.created_time | date:'yyyy/dd/MM HH:mm:ss'}}</span>
+                                            </div>
+                                        </div>
+                                        <div style="position: relative;width: 100%;margin-top: 10px">{{x.message}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--                </div>-->
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

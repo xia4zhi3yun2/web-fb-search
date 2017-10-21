@@ -1,0 +1,95 @@
+
+/*css style for search and nav bar*/
+
+#keyword {
+    border-radius: 0;
+}
+
+#submit_button {
+    border-radius: 0;
+}
+
+
+.btn-outline {
+    background-color: transparent;
+    border-radius: 0;
+    margin-left: 15px;
+    color: #428bca;
+/*    color: inherit;*/
+}
+
+.btn-primary.btn-outline {
+    color: #428bca;
+}
+
+
+
+.nav-pills{
+    border-bottom: 2px solid #428bca;
+}
+
+.nav-pills>li>a {
+    border-radius: 0;
+}
+
+.progress{
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 60px;
+}
+
+.glyphicon-star{
+    color:yellow;
+}
+
+
+
+/*Animations*/
+.slide_panel{
+/*overflow: auto;*/
+  position: absolute;
+  width:100%;
+}
+
+.class1{
+  right: 0;
+}
+
+.class2{
+  right: 1000px;
+}
+
+
+.class1-add, .class1-remove {
+transition: all ease-in-out 1s;
+}
+
+
+.class2-add, .class2-remove  {
+transition: all ease-in-out 1s;
+}
+
+
+.class3{
+  left: 0;
+}
+
+.class4{
+  left: 1000px;
+}
+
+
+.class3-add, .class3-remove {
+transition: all ease-in-out 1s;
+}
+
+
+.class4-add, .class4-remove  {
+transition: all ease-in-out 1s;
+}
+
+
+
+.hidden{
+    display: none !important;
+}
